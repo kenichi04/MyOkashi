@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import SafariServices
 
-class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
     
     @IBOutlet weak var searchText: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -47,6 +48,8 @@ class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSour
         
         // tableViewのdataSourceを設定
         tableView.dataSource = self
+        // tableViewのdelegate設定
+        tableView.delegate = self
     }
     
     // searchBar入力し、検索ボタンタップ時に呼ばれる
@@ -152,6 +155,26 @@ class ViewController: UIViewController, UISearchBarDelegate, UITableViewDataSour
         }
         return cell
     }
+    
+    // UITableVIewDelegate関連/cell選択時に呼ばれる
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // ハイライト解除
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // urlを渡して、SFSafariViewControllerインスタンス生成
+        let safariViewController = SFSafariViewController(url: okashiList[indexPath.row].link)
+        // delegate設定
+        safariViewController.delegate = self
+        // safariView表示
+        present(safariViewController, animated: true, completion: nil)
+    }
+    
+    // SafariViewが閉じた時に呼ばれるdelegateメソッド
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        // safariViewを閉じる
+        dismiss(animated: true, completion: nil)
+    }
+    
 
 }
 
